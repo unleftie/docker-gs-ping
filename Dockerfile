@@ -1,26 +1,37 @@
-# syntax=docker/dockerfile:1
+##
+## Build the application from source
+##
 
-FROM golang:1.19
+FROM golang:1.19 AS builder
 
-# Set destination for COPY
 WORKDIR /app
 
-# Download Go modules
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the source code. Note the slash at the end, as explained in
-# https://docs.docker.com/engine/reference/builder/#copy
 COPY *.go ./
 
-# Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-gs-ping
 
-# To bind to a TCP port, runtime parameters must be supplied to the docker command.
-# But we can (optionally) document in the Dockerfile what ports
-# the application is going to listen on by default.
-# https://docs.docker.com/engine/reference/builder/#expose
+##
+## Run the tests in the container
+##
+
+FROM builder AS test
+RUN go test -v ./...
+
+##
+## Deploy the application binary into a lean image
+##
+
+FROM alpine:edge
+
+WORKDIR /
+
+COPY --from=builder /docker-gs-ping /docker-gs-ping
+
 EXPOSE 8080
 
-# Run
-CMD [ "/docker-gs-ping" ]
+USER nobody:nobody
+
+ENTRYPOINT ["/docker-gs-ping"]

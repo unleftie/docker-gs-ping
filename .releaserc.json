@@ -1,0 +1,27 @@
+{
+  "branches": ["main", "master", "dependabot*"],
+  "ci": false,
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "labels": false,
+        "releasedLabels": false,
+        "failComment": false,
+        "failTitle": false
+      }
+    ]
+  ]
+}
