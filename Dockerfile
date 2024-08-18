@@ -6,12 +6,17 @@ FROM golang:1.19 AS builder
 
 WORKDIR /app
 
+ARG TARGETPLATFORM
+
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY *.go ./
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-gs-ping
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then GOARCH="amd64"; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then GOARCH="arm64"; \
+    else GOARCH="amd64"; fi && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=${GOARCH} go build -o /docker-gs-ping
 
 ##
 ## Run the tests in the container
