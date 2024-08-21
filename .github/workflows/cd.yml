@@ -13,7 +13,7 @@ on:
   pull_request_target:
     paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
     branches: ["master", "main"]
-    types: [opened, reopened]
+    types: [opened, synchronize, reopened]
 
 env:
   REGISTRY: "ghcr.io"
