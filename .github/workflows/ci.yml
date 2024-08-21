@@ -4,19 +4,21 @@ on:
   push:
     branches-ignore: ["master", "main"]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    container:
+      image: golang:1.19
+    timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           persist-credentials: false
-
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
 
       - name: Fetch required Go modules
         run: go mod download

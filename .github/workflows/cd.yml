@@ -1,18 +1,28 @@
 name: CD
 on:
   workflow_dispatch:
+    inputs:
+      publishRelease:
+        description: Publish Release
+        type: boolean
+        default: false
+        required: false
   push:
     paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
     branches: ["master", "main"]
-  # pull_request:
-  #   paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
-  #   branches: ["master", "main"]
-  #   types: [opened, reopened]
+  pull_request_target:
+    paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
+    branches: ["master", "main"]
+    types: [opened, reopened]
 
 env:
   REGISTRY: "ghcr.io"
   IMAGE_NAME: ${{ github.repository }}
   IMAGE_PLATFORMS: "linux/amd64,linux/arm64"
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   docker-build-and-publish:
@@ -90,16 +100,14 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
-        shell: bash
 
   release:
     name: Publish Release
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: |
-      inputs.publishRelease == true ||
-      github.event_name == 'push' ||
-      github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
+      inputs.publishRelease != false ||
+      github.event_name != 'pull_request'
     needs: [docker-build-and-publish]
     permissions:
       packages: write
