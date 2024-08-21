@@ -8,6 +8,9 @@ permissions:
   contents: write
   actions: write
 
+concurrency:
+  group: dependabot
+
 jobs:
   dependabot:
     runs-on: ubuntu-latest

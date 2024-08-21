@@ -10,10 +10,10 @@ on:
   push:
     paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
     branches: ["master", "main"]
-  # pull_request_target:
-  #   paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
-  #   branches: ["master", "main"]
-  #   types: [opened, synchronize, reopened]
+  pull_request_target:
+    paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
+    branches: ["master", "main"]
+    types: [opened, synchronize, reopened]
 
 env:
   REGISTRY: "ghcr.io"
