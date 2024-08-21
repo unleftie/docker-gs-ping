@@ -1,5 +1,5 @@
 {
-  "branches": ["main", "master", "dependabot*"],
+  "branches": ["main", "master"],
   "ci": false,
   "plugins": [
     [
