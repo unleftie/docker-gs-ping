@@ -4,25 +4,25 @@ updates:
     open-pull-requests-limit: 10
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
     commit-message:
       prefix: "chore"
       include: "scope"
     labels:
       - "dependencies"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch"]
+    # ignore:
+    #   - dependency-name: "*"
+    #     update-types: ["version-update:semver-patch"]
   - package-ecosystem: "gomod"
     open-pull-requests-limit: 10
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
     commit-message:
       prefix: "chore"
       include: "scope"
     labels:
       - "dependencies"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch"]
+    # ignore:
+    #   - dependency-name: "*"
+    #     update-types: ["version-update:semver-patch"]
