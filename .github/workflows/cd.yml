@@ -14,6 +14,9 @@ on:
     paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
     branches: ["master", "main"]
     types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: ["dependabot-reviewer"] # run on dependabot's push, see https://github.com/fastify/github-action-merge-dependabot/issues/134
+    types: [completed]
 
 env:
   REGISTRY: "ghcr.io"
