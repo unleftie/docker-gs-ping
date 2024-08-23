@@ -33,8 +33,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
-      contents: read
       packages: write
+      contents: write
+      issues: write
+      pull-requests: write
       id-token: write
     steps:
       - name: Harden Runner
@@ -96,6 +98,7 @@ jobs:
           tags: |
             ${{ steps.meta.outputs.tags }}
             ${{ steps.release.outputs.new_release_version }}
+            ${{ steps.release.outputs.new_release_major_version }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: "type=gha"
           cache-to: "type=gha,mode=max"
@@ -108,6 +111,7 @@ jobs:
           TAGS: |
             ${{ steps.meta.outputs.tags }}
             ${{ steps.release.outputs.new_release_version }}
+            ${{ steps.release.outputs.new_release_major_version }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
