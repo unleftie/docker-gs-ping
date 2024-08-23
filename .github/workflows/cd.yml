@@ -97,8 +97,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request_target' }}
           tags: |
             ${{ steps.meta.outputs.tags }}
-            ${{ steps.release.outputs.new_release_version }}
-            ${{ steps.release.outputs.new_release_major_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_major_version }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: "type=gha"
           cache-to: "type=gha,mode=max"
@@ -110,8 +110,8 @@ jobs:
           # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
           TAGS: |
             ${{ steps.meta.outputs.tags }}
-            ${{ steps.release.outputs.new_release_version }}
-            ${{ steps.release.outputs.new_release_major_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_major_version }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
