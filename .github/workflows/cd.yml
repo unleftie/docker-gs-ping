@@ -99,6 +99,7 @@ jobs:
             ${{ steps.meta.outputs.tags }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_major_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: "type=gha"
           cache-to: "type=gha,mode=max"
@@ -112,6 +113,7 @@ jobs:
             ${{ steps.meta.outputs.tags }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_major_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
