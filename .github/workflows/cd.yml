@@ -1,12 +1,6 @@
 name: CD
 on:
   workflow_dispatch:
-    inputs:
-      publishRelease:
-        description: Publish Release
-        type: boolean
-        default: false
-        required: false
   push:
     paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
     branches: ["master", "main"]
@@ -28,15 +22,58 @@ defaults:
     shell: bash
 
 jobs:
+  init:
+    name: Initialize CD for ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5c7944e73c4c2a096b17a9cb74d65b6c2bbafbde # v2.9.1
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      - name: Get Short SHA
+        id: short-sha
+        run: echo "short-sha=${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
+
+      - name: Dry-run Semantic Release
+        id: release
+        uses: cycjimmy/semantic-release-action@cb425203a562475bca039ba4dbf90c7f9ac790f4 #v4.1.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          dry_run: true
+          extra_plugins: |
+            conventional-changelog-conventionalcommits@6.1.0
+            @semantic-release/github@10.1.1
+
+      - name: Print Short SHA
+        run: echo "Short SHA is '${{ steps.short-sha.outputs.short-sha }}'"
+
+      - name: Print new release version
+        run: echo "New release version is '${{ steps.release.outputs.new_release_version }}'"
+
+      - name: Print new release major version
+        run: echo "New release major version is '${{ steps.release.outputs.new_release_major_version }}'"
+
+    outputs:
+      short_sha: ${{ steps.short-sha.outputs.short-sha }}
+      new_release_version: ${{ steps.release.outputs.new_release_version }}
+      new_release_major_version: ${{ steps.release.outputs.new_release_major_version }}
+
   docker-build-and-publish:
     name: Docker Build and Publish
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    needs: [init]
     permissions:
+      contents: read
       packages: write
-      contents: write
-      issues: write
-      pull-requests: write
       id-token: write
     steps:
       - name: Harden Runner
@@ -78,17 +115,6 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Dry-run Semantic Release
-        id: release
-        uses: cycjimmy/semantic-release-action@cb425203a562475bca039ba4dbf90c7f9ac790f4 #v4.1.0
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          dry_run: true
-          extra_plugins: |
-            conventional-changelog-conventionalcommits@6.1.0
-            @semantic-release/github@10.1.1
-
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v6
@@ -97,8 +123,9 @@ jobs:
           push: ${{ github.event_name != 'pull_request_target' }}
           tags: |
             ${{ steps.meta.outputs.tags }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_version }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_major_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.new_release_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.new_release_major_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.short_sha }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: "type=gha"
@@ -111,8 +138,9 @@ jobs:
           # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
           TAGS: |
             ${{ steps.meta.outputs.tags }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_version }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.new_release_major_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.new_release_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.new_release_major_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.short_sha }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
@@ -121,12 +149,9 @@ jobs:
     name: Publish Release
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: |
-      inputs.publishRelease != false ||
-      github.event_name != 'pull_request_target'
+    if: github.event_name != 'pull_request_target'
     needs: [docker-build-and-publish]
     permissions:
-      packages: write
       contents: write
       issues: write
       pull-requests: write
