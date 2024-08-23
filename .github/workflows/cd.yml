@@ -76,13 +76,26 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+      - name: Dry-run Semantic Release
+        id: release
+        uses: cycjimmy/semantic-release-action@cb425203a562475bca039ba4dbf90c7f9ac790f4 #v4.1.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          dry_run: true
+          extra_plugins: |
+            conventional-changelog-conventionalcommits@6.1.0
+            @semantic-release/github@10.1.1
+
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: ${{ github.event_name != 'pull_request_target' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ steps.release.outputs.new_release_version }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: "type=gha"
           cache-to: "type=gha,mode=max"
@@ -92,7 +105,9 @@ jobs:
         if: ${{ github.event_name != 'pull_request_target' }}
         env:
           # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
-          TAGS: ${{ steps.meta.outputs.tags }}
+          TAGS: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ steps.release.outputs.new_release_version }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
