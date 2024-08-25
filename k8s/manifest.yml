@@ -12,11 +12,17 @@ spec:
     metadata:
       labels:
         app: nginx
+        env: dev
     spec:
       containers:
         - name: nginx
           image: nginx:alpine
           imagePullPolicy: IfNotPresent
+          env:
+            - name: LABEL_ENVIRONMENT
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['env']
           ports:
             - containerPort: 80
           resources:
@@ -52,16 +58,17 @@ spec:
     metadata:
       labels:
         app: app
+        env: dev
     spec:
       containers:
         - name: app
           image: ghcr.io/unleftie/docker-gs-ping:latest
           imagePullPolicy: Always
           env:
-            - name: MY_NODE_NAME
+            - name: LABEL_ENVIRONMENT
               valueFrom:
                 fieldRef:
-                  fieldPath: spec.nodeName
+                  fieldPath: metadata.labels['env']
           ports:
             - containerPort: 8080
           resources:
