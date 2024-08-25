@@ -31,6 +31,8 @@ RUN go test -v ./...
 
 FROM alpine:edge
 
+RUN apk add --no-cache stress-ng
+
 WORKDIR /
 
 COPY --from=builder /docker-gs-ping /docker-gs-ping
