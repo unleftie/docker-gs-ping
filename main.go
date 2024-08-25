@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
+	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -32,31 +35,64 @@ func getPrivateIP() (string, error) {
 }
 
 func main() {
-
 	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	e.GET("/", func(c echo.Context) error {
-		// Get the private IP address
 		privateIP, err := getPrivateIP()
 		if err != nil {
 			return c.HTML(http.StatusInternalServerError, "Failed to retrieve private IP address")
 		}
 
-		// Get the hostname
 		hostname, err := os.Hostname()
 		if err != nil {
 			return c.HTML(http.StatusInternalServerError, "Failed to retrieve hostname")
 		}
 
-		// Get the Go version
 		goVersion := runtime.Version()
 
+		appVersion := os.Getenv("VERSION_LABEL")
+		if appVersion == "" {
+			appVersion = "null"
+			slog.Info("VERSION_LABEL environment is not set")
+		}
+
+		appEnvironment := os.Getenv("ENVIRONMENT_LABEL")
+		if appEnvironment == "" {
+			appEnvironment = "null"
+			slog.Info("ENVIRONMENT_LABEL environment is not set")
+		}
+
+		const templateStr = `
+		Private IP: {{.privateIP}}<br>
+		Hostname: {{.hostname}}<br>
+		Go Version: {{.goVersion}}<br>
+		App Version: {{.appVersion}}<br>
+		App Environment: {{.appEnvironment}}<br>
+		`
+
+		tmpl, err := template.New("info").Parse(templateStr)
+		if err != nil {
+			return err
+		}
+
+		data := map[string]string{
+			"privateIP":      privateIP,
+			"hostname":       hostname,
+			"goVersion":      goVersion,
+			"appVersion":     appVersion,
+			"appEnvironment": appEnvironment,
+		}
+
+		var buf bytes.Buffer
+		if err := tmpl.Execute(&buf, data); err != nil {
+			return err
+		}
+
 		// Return the information in the response
-		response := fmt.Sprintf("Private IP: %s<br>Hostname: %s<br>Go Version: %s", privateIP, hostname, goVersion)
-		return c.HTML(http.StatusOK, response)
+		return c.HTML(http.StatusOK, buf.String())
 	})
 
 	e.GET("/health", func(c echo.Context) error {
