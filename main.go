@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"runtime"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -38,11 +39,24 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.GET("/", func(c echo.Context) error {
+		// Get the private IP address
 		privateIP, err := getPrivateIP()
 		if err != nil {
-			return c.HTML(http.StatusInternalServerError, "Failed to retrieve IP address")
+			return c.HTML(http.StatusInternalServerError, "Failed to retrieve private IP address")
 		}
-		return c.HTML(http.StatusOK, fmt.Sprintf("Hello, my  private IP is %s", privateIP))
+
+		// Get the hostname
+		hostname, err := os.Hostname()
+		if err != nil {
+			return c.HTML(http.StatusInternalServerError, "Failed to retrieve hostname")
+		}
+
+		// Get the Go version
+		goVersion := runtime.Version()
+
+		// Return the information in the response
+		response := fmt.Sprintf("Private IP: %s<br>Hostname: %s<br>Go Version: %s", privateIP, hostname, goVersion)
+		return c.HTML(http.StatusOK, response)
 	})
 
 	e.GET("/health", func(c echo.Context) error {
