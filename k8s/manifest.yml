@@ -70,6 +70,9 @@ spec:
         - name: app
           image: ghcr.io/unleftie/docker-gs-ping:latest
           imagePullPolicy: Always
+          securityContext:
+            runAsUser: 0 # FIXME: remove later
+            runAsGroup: 0 # FIXME: remove later
           env:
             - name: ENVIRONMENT_LABEL
               valueFrom:
@@ -135,3 +138,23 @@ data:
             proxy_pass http://app-service.default.svc.cluster.local:8080;
         }
     }
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: app-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: app
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 30
