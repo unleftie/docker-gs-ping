@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"html/template"
 	"log/slog"
 	"net"
 	"net/http"
@@ -66,33 +64,29 @@ func main() {
 		}
 
 		const templateStr = `
-		Private IP: {{.privateIP}}<br>
-		Hostname: {{.hostname}}<br>
-		Go Version: {{.goVersion}}<br>
-		App Version: {{.appVersion}}<br>
-		App Environment: {{.appEnvironment}}<br>
+		{
+		  "private_ip": "{{.privateIP}}",
+		  "hostname": "{{.hostname}}",
+		  "go_version": "{{.goVersion}}",
+		  "app_version": "{{.appVersion}}",
+		  "app_environment": "{{.appEnvironment}}"
+		}
 		`
 
-		tmpl, err := template.New("info").Parse(templateStr)
-		if err != nil {
-			return err
-		}
-
-		data := map[string]string{
-			"privateIP":      privateIP,
-			"hostname":       hostname,
-			"goVersion":      goVersion,
-			"appVersion":     appVersion,
-			"appEnvironment": appEnvironment,
-		}
-
-		var buf bytes.Buffer
-		if err := tmpl.Execute(&buf, data); err != nil {
-			return err
-		}
-
-		// Return the information in the response
-		return c.HTML(http.StatusOK, buf.String())
+		// Return the information as JSON in the response
+		return c.JSON(http.StatusOK, struct {
+			PrivateIP      string `json:"private_ip"`
+			Hostname       string `json:"hostname"`
+			GoVersion      string `json:"go_version"`
+			AppVersion     string `json:"app_version"`
+			AppEnvironment string `json:"app_environment"`
+		}{
+			PrivateIP:      privateIP,
+			Hostname:       hostname,
+			GoVersion:      goVersion,
+			AppVersion:     appVersion,
+			AppEnvironment: appEnvironment,
+		})
 	})
 
 	e.GET("/health", func(c echo.Context) error {
