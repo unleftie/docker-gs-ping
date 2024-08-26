@@ -31,7 +31,8 @@ RUN go test -v ./...
 
 FROM alpine:edge
 
-RUN apk add --no-cache stress-ng
+# FIXME: remove this later
+RUN apk add --no-cache stress-ng 
 
 WORKDIR /
 
