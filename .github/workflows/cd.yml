@@ -70,7 +70,7 @@ jobs:
         run: echo "Short SHA is '${{ steps.short-sha.outputs.short-sha }}'"
 
       - name: Print release version
-        run: echo "Release version is '${{ steps.release.outputs.new_release_version }}'"
+        run: echo "Release version is '${{ env.release_version }}'"
 
     outputs:
       short_sha: ${{ steps.short-sha.outputs.short-sha }}
