@@ -160,7 +160,7 @@ jobs:
         if: github.event_name != 'pull_request_target'
         uses: actions/delete-package-versions@v5
         with:
-          package-name: ${{ env.IMAGE_NAME }}
+          package-name: ${{ github.event.repository.name }}
           package-type: "container"
           min-versions-to-keep: 3
           token: ${{ github.token }}
