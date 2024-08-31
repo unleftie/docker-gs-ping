@@ -58,19 +58,23 @@ jobs:
             conventional-changelog-conventionalcommits@6.1.0
             @semantic-release/github@10.1.1
 
+      - name: Get new release version or assign current
+        run: |
+          if [ "${{ steps.release.outputs.new_release_version }}" != "" ]; then
+            echo "release_version=${{ steps.release.outputs.new_release_version }}" >> $GITHUB_ENV
+          else
+            echo "release_version=$(git tag --points-at ${{ steps.short-sha.outputs.short-sha }})" >> $GITHUB_ENV
+          fi
+
       - name: Print Short SHA
         run: echo "Short SHA is '${{ steps.short-sha.outputs.short-sha }}'"
 
-      - name: Print new release version
-        run: echo "New release version is '${{ steps.release.outputs.new_release_version }}'"
-
-      - name: Print new release major version
-        run: echo "New release major version is '${{ steps.release.outputs.new_release_major_version }}'"
+      - name: Print release version
+        run: echo "Release version is '${{ steps.release.outputs.new_release_version }}'"
 
     outputs:
       short_sha: ${{ steps.short-sha.outputs.short-sha }}
-      new_release_version: ${{ steps.release.outputs.new_release_version }}
-      new_release_major_version: ${{ steps.release.outputs.new_release_major_version }}
+      release_version: ${{ env.release_version }}
 
   docker-build-and-publish:
     name: Docker Build and Publish
@@ -129,11 +133,13 @@ jobs:
           push: ${{ github.event_name != 'pull_request_target' }}
           tags: |
             ${{ steps.meta.outputs.tags }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.new_release_version }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.new_release_major_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.release_version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.short_sha }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            SHORT_SHA=${{ needs.init.outputs.short_sha }}
+            RELEASE_VERSION=${{ needs.init.outputs.release_version }}
           cache-from: "type=gha"
           cache-to: "type=gha,mode=max"
           platforms: ${{ env.IMAGE_PLATFORMS }}
@@ -144,8 +150,7 @@ jobs:
           # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
           TAGS: |
             ${{ steps.meta.outputs.tags }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.new_release_version }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.new_release_major_version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.release_version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.short_sha }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           DIGEST: ${{ steps.build-and-push.outputs.digest }}

@@ -51,10 +51,16 @@ func main() {
 
 		goVersion := runtime.Version()
 
-		appVersion := os.Getenv("VERSION_LABEL")
-		if appVersion == "" {
-			appVersion = "null"
-			slog.Info("VERSION_LABEL environment is not set")
+		releaseVersion := os.Getenv("RELEASE_VERSION")
+		if releaseVersion == "" {
+			releaseVersion = "null"
+			slog.Info("RELEASE_VERSION environment is not set")
+		}
+
+		manifestVersion := os.Getenv("MANIFEST_VERSION_LABEL")
+		if manifestVersion == "" {
+			manifestVersion = "null"
+			slog.Info("MANIFEST_VERSION_LABEL environment is not set")
 		}
 
 		appEnvironment := os.Getenv("ENVIRONMENT_LABEL")
@@ -68,24 +74,27 @@ func main() {
 		  "private_ip": "{{.privateIP}}",
 		  "hostname": "{{.hostname}}",
 		  "go_version": "{{.goVersion}}",
-		  "app_version": "{{.appVersion}}",
+		  "release_version": "{{.releaseVersion}}",
+		  "manifest_version": "{{.manifestVersion}}",
 		  "app_environment": "{{.appEnvironment}}"
 		}
 		`
 
 		// Return the information as JSON in the response
 		return c.JSON(http.StatusOK, struct {
-			PrivateIP      string `json:"private_ip"`
-			Hostname       string `json:"hostname"`
-			GoVersion      string `json:"go_version"`
-			AppVersion     string `json:"app_version"`
-			AppEnvironment string `json:"app_environment"`
+			PrivateIP       string `json:"private_ip"`
+			Hostname        string `json:"hostname"`
+			GoVersion       string `json:"go_version"`
+			ReleaseVersion  string `json:"release_version"`
+			ManifestVersion string `json:"manifest_version"`
+			AppEnvironment  string `json:"app_environment"`
 		}{
-			PrivateIP:      privateIP,
-			Hostname:       hostname,
-			GoVersion:      goVersion,
-			AppVersion:     appVersion,
-			AppEnvironment: appEnvironment,
+			PrivateIP:       privateIP,
+			Hostname:        hostname,
+			GoVersion:       goVersion,
+			ReleaseVersion:  releaseVersion,
+			ManifestVersion: manifestVersion,
+			AppEnvironment:  appEnvironment,
 		})
 	})
 
