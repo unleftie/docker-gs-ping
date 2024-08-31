@@ -157,6 +157,7 @@ jobs:
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
       - name: Delete old Docker images
+        if: github.event_name != 'pull_request_target'
         uses: actions/delete-package-versions@v5
         with:
           package-name: ${{ env.IMAGE_NAME }}
