@@ -31,17 +31,12 @@ RUN go test -v ./...
 
 FROM alpine:edge
 
-ARG SHORT_SHA
-ARG RELEASE_VERSION
-
 ENV SHORT_SHA=${SHORT_SHA}
 ENV RELEASE_VERSION=${RELEASE_VERSION}
 
 WORKDIR /
 
-RUN apk add --no-cache stress-ng \
-    && echo "Short SHA: ${SHORT_SHA:-null}" >> version.txt \
-    && echo "Release version: ${RELEASE_VERSION:-null}" >> version.txt
+RUN apk add --no-cache stress-ng
 
 COPY --from=builder /docker-gs-ping /docker-gs-ping
 
