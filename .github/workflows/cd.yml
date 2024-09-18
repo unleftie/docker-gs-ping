@@ -4,7 +4,7 @@ on:
   push:
     paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
     branches: ["master", "main"]
-  pull_request_target:
+  pull_request:
     paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
     branches: ["master", "main"]
     types: [opened, synchronize, reopened]
@@ -98,7 +98,7 @@ jobs:
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
-        if: github.event_name != 'pull_request_target'
+        if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@4959ce089c160fddf62f7b42464195ba1a56d382 #v3.6.0
         with:
           cosign-release: "v2.2.4"
@@ -112,7 +112,7 @@ jobs:
           platforms: ${{ env.IMAGE_PLATFORMS }}
 
       - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request_target'
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
         with:
           registry: ${{ env.REGISTRY }}
@@ -130,7 +130,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request_target' }}
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ steps.meta.outputs.tags }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.init.outputs.release_version }}
@@ -145,7 +145,7 @@ jobs:
           platforms: ${{ env.IMAGE_PLATFORMS }}
 
       - name: Sign the published Docker image
-        if: ${{ github.event_name != 'pull_request_target' }}
+        if: ${{ github.event_name != 'pull_request' }}
         env:
           # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
           TAGS: |
@@ -157,7 +157,7 @@ jobs:
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
       - name: Delete old Docker images
-        if: github.event_name != 'pull_request_target'
+        if: github.event_name != 'pull_request'
         uses: actions/delete-package-versions@v5
         with:
           package-name: ${{ github.event.repository.name }}
@@ -170,7 +170,7 @@ jobs:
     name: Publish Release
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: github.event_name != 'pull_request_target'
+    if: github.event_name != 'pull_request'
     needs: [docker-build-and-publish]
     permissions:
       contents: write
