@@ -4,11 +4,12 @@ updates:
     open-pull-requests-limit: 10
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     commit-message:
       prefix: "chore"
     labels:
       - "dependencies"
+      - "dependabot"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -21,6 +22,7 @@ updates:
       prefix: "chore"
     labels:
       - "dependencies"
+      - "dependabot"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]

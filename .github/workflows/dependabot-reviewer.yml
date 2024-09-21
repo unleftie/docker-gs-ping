@@ -27,14 +27,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Dependency Review
-        uses: actions/dependency-review-action@5a2ce3f5b92ee19cbb1541a4984c76d921601d7c # v4.3.4
+        uses: actions/dependency-review-action@v4
         with:
           license-check: true
           vulnerability-check: true
           fail-on-severity: "low"
 
       - name: Fetch Dependabot metadata
-        uses: dependabot/fetch-metadata@dbb049abf0d677abbd7f7eee0375145b417fdd34 # v2.2.0
+        uses: dependabot/fetch-metadata@v2
         with:
           alert-lookup: true
           compat-lookup: true
