@@ -36,7 +36,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@446798f8213ac2e75931c1b0769676d927801858 # v2.10.0
+        uses: step-security/harden-runner@v2
         with:
           disable-sudo: true
           egress-policy: audit
@@ -53,7 +53,7 @@ jobs:
 
       - name: Dry-run Semantic Release
         id: release
-        uses: cycjimmy/semantic-release-action@cb425203a562475bca039ba4dbf90c7f9ac790f4 #v4.1.0
+        uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -94,19 +94,19 @@ jobs:
       id-token: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@446798f8213ac2e75931c1b0769676d927801858 # v2.10.0
+        uses: step-security/harden-runner@v2
         with:
           disable-sudo: true
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@6d193bf28034eafb982f37bd894289fe649468fc # v4.1.7
+        uses: actions/checkout@v4
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@4959ce089c160fddf62f7b42464195ba1a56d382 #v3.6.0
+        uses: sigstore/cosign-installer@v3
         with:
           cosign-release: "v2.2.4"
 
@@ -185,7 +185,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@446798f8213ac2e75931c1b0769676d927801858 # v2.10.0
+        uses: step-security/harden-runner@v2
         with:
           disable-sudo: true
           egress-policy: audit
