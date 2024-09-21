@@ -8,8 +8,10 @@ on:
     paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
     branches: ["master", "main"]
     types: [opened, synchronize, reopened]
+  # run on dependabot's push, see https://github.com/fastify/github-action-merge-dependabot/issues/134
   workflow_run:
-    workflows: ["Approve and Merge Dependabot's PR"] # run on dependabot's push, see https://github.com/fastify/github-action-merge-dependabot/issues/134
+    workflows: ["Approve and Merge Dependabot's PR"]
+    branches: ["master", "main"]
     types: [completed]
 
 env:
@@ -30,6 +32,7 @@ jobs:
     name: Initialize CD for ${{ github.ref_name }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    if: github.event.workflow_run.conclusion != 'failure'
     permissions:
       contents: write
       issues: write
@@ -87,6 +90,7 @@ jobs:
     name: Docker Build and Publish
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    if: github.event.workflow_run.conclusion != 'failure'
     needs: [init]
     permissions:
       contents: read
@@ -177,7 +181,7 @@ jobs:
     name: Publish Release
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.event.workflow_run.conclusion != 'failure'
     needs: [docker-build-and-publish]
     permissions:
       contents: write
