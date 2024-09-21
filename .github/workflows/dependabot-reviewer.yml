@@ -50,4 +50,4 @@ jobs:
         with:
           approve-only: false
           merge-comment: "I'm **approving** this PR because **it includes dependency update**"
-          use-github-auto-merge: false
+          use-github-auto-merge: true
