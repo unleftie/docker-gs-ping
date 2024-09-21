@@ -57,6 +57,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
+          semantic_version: 24
           dry_run: true
           extra_plugins: |
             conventional-changelog-conventionalcommits@8.0.0
@@ -200,6 +201,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
+          semantic_version: 24
           extra_plugins: |
             conventional-changelog-conventionalcommits@8.0.0
             @semantic-release/github@10.3.5
