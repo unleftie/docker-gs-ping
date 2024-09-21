@@ -123,7 +123,7 @@ jobs:
           fail_on: high
           output_formats: "json,sarif"
           exclude_paths: ".github/workflows/scorecard.yml"
-          exclude_results: "555ab8f9-2001-455e-a077-f2d0f41e2fb9" # Unpinned Actions Full Length Commit SHA
+          exclude_queries: "555ab8f9-2001-455e-a077-f2d0f41e2fb9" # Unpinned Actions Full Length Commit SHA
         continue-on-error: true
 
       - name: Upload to code-scanning
