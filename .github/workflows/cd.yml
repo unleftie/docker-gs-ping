@@ -9,7 +9,7 @@ on:
     branches: ["master", "main"]
     types: [opened, synchronize, reopened]
   workflow_run:
-    workflows: ["dependabot-reviewer"] # run on dependabot's push, see https://github.com/fastify/github-action-merge-dependabot/issues/134
+    workflows: ["Approve and Merge Dependabot's PR"] # run on dependabot's push, see https://github.com/fastify/github-action-merge-dependabot/issues/134
     types: [completed]
 
 env:
@@ -38,7 +38,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           persist-credentials: false
