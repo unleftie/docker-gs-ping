@@ -6,6 +6,11 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+nodeExporterImage:
+  repository: prom/node-exporter
+  pullPolicy: Always
+  tag: latest
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -24,8 +29,9 @@ serviceAccount:
 podAnnotations: {}
 podLabels:
   app: docker-gs-ping
-  env: dev
+  env: prod
   manifest_version: "1"
+  monitoring: prometheus
 
 podSecurityContext:
   {}
@@ -44,6 +50,13 @@ securityContext:
 service:
   type: ClusterIP
   port: 8080
+
+nodeExporterService:
+  port: 9100
+
+serviceLabels:
+  env: prod
+  monitoring: prometheus
 
 ingress:
   enabled: false

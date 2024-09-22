@@ -4,6 +4,9 @@ metadata:
   name: {{ include "docker-gs-ping.fullname" . }}
   labels:
     {{- include "docker-gs-ping.labels" . | nindent 4 }}
+    {{- with .Values.serviceLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -11,5 +14,9 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: {{ .Values.nodeExporter.port }}
+      targetPort: http-metrics
+      protocol: TCP
+      name: http-metrics
   selector:
     {{- include "docker-gs-ping.selectorLabels" . | nindent 4 }}

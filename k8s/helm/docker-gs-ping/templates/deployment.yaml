@@ -50,6 +50,21 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+        - name: node-exporter
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.nodeExporterImage.repository }}:{{ .Values.nodeExporterImage.tag }}"
+          imagePullPolicy: {{ .Values.nodeExporterImage.pullPolicy }}
+          ports:
+            - name: http-metrics
+              containerPort: {{ .Values.nodeExporterService.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
