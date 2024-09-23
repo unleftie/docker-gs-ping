@@ -249,6 +249,7 @@ jobs:
           persist-credentials: false
 
       - name: Semantic Release
+        id: release
         uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ github.token }}
