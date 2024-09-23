@@ -260,7 +260,7 @@ jobs:
             @semantic-release/github@10.3.5
 
       - name: Replace release version in Helm chart files
-        run: sed -i "s/\$GITHUB_RELEASE_VERSION/v${{ steps.release.outputs.last_release_version }}/g" helm/Chart.yaml
+        run: sed -i "s/\$GITHUB_RELEASE_VERSION/v${{ steps.release.outputs.last_release_version }}/g" helm-charts/docker-gs-ping/Chart.yaml
 
       - name: Configure Git
         run: |
