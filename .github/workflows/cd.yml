@@ -261,6 +261,11 @@ jobs:
       - name: Replace release version in Helm chart files
         run: sed -i "s/\$GITHUB_RELEASE_VERSION/v${{ steps.release.outputs.last_release_version }}/g" helm/Chart.yaml
 
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
       - name: Install Helm
         uses: azure/setup-helm@v4
         env:
