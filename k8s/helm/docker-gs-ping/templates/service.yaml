@@ -14,7 +14,7 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-    - port: {{ .Values.nodeExporter.port }}
+    - port: {{ .Values.nodeExporterService.port }}
       targetPort: http-metrics
       protocol: TCP
       name: http-metrics
