@@ -260,7 +260,7 @@ jobs:
             @semantic-release/github@10.3.5
 
       - name: Replace release version in Helm chart files
-        run: sed -i "s/\$GITHUB_RELEASE_VERSION/v${{ steps.release.outputs.last_release_version }}/g" helm-charts/docker-gs-ping/Chart.yaml
+        run: sed -i "s/\$GITHUB_RELEASE_VERSION/v${{ steps.release.outputs.last_release_version }}/g" charts/docker-gs-ping/Chart.yaml
 
       - name: Configure Git
         run: |
@@ -275,6 +275,9 @@ jobs:
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         with:
-          charts_dir: helm-charts
+          charts_dir: "charts"
+          pages_branch: "gh-pages"
+          mark_as_latest: false
+          skip_existing: false
         env:
           CR_TOKEN: "${{ github.token }}"
