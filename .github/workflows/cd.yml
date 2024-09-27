@@ -182,6 +182,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+        # FIXME: add a step to publish Helm Chart to OCI registry
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v6
@@ -259,10 +260,10 @@ jobs:
             conventional-changelog-conventionalcommits@8.0.0
             @semantic-release/github@10.3.5
 
-      - name: Replace release version in Helm chart files
+      - name: Replace release version in Helm chart files # FIXME: double check if this step is necessary
         run: sed -i "s/\$GITHUB_RELEASE_VERSION/v${{ steps.release.outputs.last_release_version }}/g" charts/docker-gs-ping/Chart.yaml
 
-      - name: Configure Git
+      - name: Configure Git # FIXME: double check if this step is necessary
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
