@@ -265,6 +265,9 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ github.token }}"
 
+      - name: Replace release version in Chart.yaml file
+        run: sed -i "s/\$GITHUB_RELEASE_VERSION/v${{ steps.release.outputs.last_release_version }}/g" charts/docker-gs-ping/Chart.yaml
+
       - name: Configure Git credentials for chart-releaser
         run: |
           git config user.name "$GITHUB_ACTOR"
