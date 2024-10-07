@@ -77,8 +77,8 @@ ingress:
 
 resources:
   limits:
-    memory: "256Mi"
-    cpu: "0.5"
+    memory: 256Mi
+    cpu: 0.5
 
 livenessProbe:
   httpGet:
