@@ -75,10 +75,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources:
-  limits:
-    memory: 256Mi
-    cpu: 0.5
+resources: {}
 
 livenessProbe:
   httpGet:
