@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: "0.0.1" # will be replaced by GitHub Actions
+appVersion: "latest" # will be replaced by GitHub Actions
 description: docker-gs-ping Helm Chart
 home: https://github.com/unleftie/docker-gs-ping
 name: docker-gs-ping
