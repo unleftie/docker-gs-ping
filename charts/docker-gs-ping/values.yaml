@@ -1,14 +1,14 @@
-replicaCount: 1
+replicaCount: 2
 
 image:
   repository: ghcr.io/unleftie/docker-gs-ping
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
 nodeExporterImage:
   repository: prom/node-exporter
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   tag: latest
 
 imagePullSecrets: []
@@ -84,11 +84,21 @@ livenessProbe:
   initialDelaySeconds: 5
   periodSeconds: 30
 
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  initialDelaySeconds: 5
+
 autoscaling:
   enabled: true
-  minReplicas: 2
-  maxReplicas: 4
+  minReplicas: 4
+  maxReplicas: 6
   targetCPUUtilizationPercentage: 40
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
 
 # Additional volumes on the output Deployment definition.
 volumes: []
@@ -107,4 +117,12 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: role
+              operator: In
+              values:
+                - agent
