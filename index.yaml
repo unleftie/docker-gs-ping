@@ -2,6 +2,17 @@ apiVersion: v1
 entries:
   docker-gs-ping:
   - apiVersion: v2
+    appVersion: v1.18.2
+    created: "2024-12-01T16:41:25.397294265Z"
+    description: docker-gs-ping Helm Chart
+    digest: 0b69ae2be474a0bbb0fe2936c2d75cc2ad4371349e614c42b611f077bfbb5849
+    home: https://github.com/unleftie/docker-gs-ping
+    name: docker-gs-ping
+    type: application
+    urls:
+    - https://github.com/unleftie/docker-gs-ping/releases/download/docker-gs-ping-1.4.1/docker-gs-ping-1.4.1.tgz
+    version: 1.4.1
+  - apiVersion: v2
     appVersion: v1.17.19
     created: "2024-10-20T16:35:47.701866229Z"
     description: docker-gs-ping Helm Chart
@@ -89,4 +100,4 @@ entries:
     urls:
     - https://github.com/unleftie/docker-gs-ping/releases/download/docker-gs-ping-1.2.0/docker-gs-ping-1.2.0.tgz
     version: 1.2.0
-generated: "2024-10-20T16:35:47.70189903Z"
+generated: "2024-12-01T16:41:25.39733407Z"
