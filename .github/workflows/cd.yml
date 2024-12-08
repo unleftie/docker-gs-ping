@@ -13,12 +13,7 @@ on:
   pull_request:
     paths-ignore: ["**.md", "LICENSE", ".github/dependabot.yml"]
     branches: ["master", "main"]
-    types: [opened, synchronize, reopened]
-  # run on dependabot's push, see https://github.com/fastify/github-action-merge-dependabot/issues/134
-  workflow_run:
-    workflows: ["Approve and Merge Dependabot's PR"]
-    branches: ["dependabot/**"]
-    types: [completed]
+    types: [opened, reopened]
 
 env:
   REGISTRY: "ghcr.io"
@@ -39,7 +34,6 @@ jobs:
     name: Initialize CD for ${{ github.ref_name }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: github.event.workflow_run.conclusion != 'failure'
     permissions:
       contents: write
       issues: write
@@ -98,8 +92,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: |
-      github.event_name != 'pull_request' &&
-      github.event.workflow_run.conclusion != 'failure'
+      inputs.runKics == true ||
+      github.event_name == 'push'
     permissions:
       contents: read
       issues: write
@@ -135,8 +129,6 @@ jobs:
     name: Docker Build and Publish
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: |
-      github.event.workflow_run.conclusion != 'failure'
     needs: [init]
     permissions:
       contents: read
@@ -228,10 +220,8 @@ jobs:
     name: Publish Release
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: |
-      github.event_name != 'pull_request' &&
-      github.event.workflow_run.conclusion != 'failure'
     needs: [docker-build-and-publish]
+    if: github.event_name == 'push'
     permissions:
       contents: write
       issues: write
