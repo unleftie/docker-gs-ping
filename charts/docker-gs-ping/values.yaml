@@ -118,18 +118,18 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity:
-  nodeAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        preference:
-          matchExpressions:
-            - key: role
-              operator: In
-              values:
-                - agent
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - k3d-k3s-default-agent-0
-                - k3d-k3s-default-agent-1
+affinity: {}
+# nodeAffinity:
+#   preferredDuringSchedulingIgnoredDuringExecution:
+#     - weight: 1
+#       preference:
+#         matchExpressions:
+#           - key: role
+#             operator: In
+#             values:
+#               - agent
+#           - key: kubernetes.io/hostname
+#             operator: In
+#             values:
+#               - k3d-k3s-default-agent-0
+#               - k3d-k3s-default-agent-1
