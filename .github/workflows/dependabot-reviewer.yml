@@ -1,4 +1,4 @@
-name: Approve and Merge Dependabot's PR
+name: Approve Dependabot's PR
 on:
   pull_request:
     types: [opened]
