@@ -25,6 +25,8 @@ defaults:
   run:
     shell: bash
 
+permissions: {}
+
 concurrency:
   group: CD
   cancel-in-progress: false

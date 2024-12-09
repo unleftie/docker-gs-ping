@@ -13,6 +13,8 @@ defaults:
   run:
     shell: bash
 
+permissions: {}
+
 jobs:
   docker-build:
     name: Docker Build
