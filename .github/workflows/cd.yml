@@ -214,7 +214,7 @@ jobs:
         with:
           package-name: ${{ github.event.repository.name }}
           package-type: "container"
-          min-versions-to-keep: 100
+          min-versions-to-keep: 200
           delete-only-untagged-versions: true
           token: ${{ github.token }}
 
