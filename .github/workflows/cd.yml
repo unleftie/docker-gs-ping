@@ -130,7 +130,7 @@ jobs:
   docker-build-and-publish:
     name: Docker Build and Publish
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     needs: [init]
     permissions:
       contents: read
