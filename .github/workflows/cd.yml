@@ -59,7 +59,7 @@ jobs:
 
       - name: Dry-run Semantic Release
         id: release
-        uses: cycjimmy/semantic-release-action@v4
+        uses: cycjimmy/semantic-release-action@v6
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -243,7 +243,7 @@ jobs:
 
       - name: Semantic Release
         id: release
-        uses: cycjimmy/semantic-release-action@v4
+        uses: cycjimmy/semantic-release-action@v6
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
