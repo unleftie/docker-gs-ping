@@ -2,8 +2,8 @@ name: CD
 on:
   workflow_dispatch:
     inputs:
-      runKics:
-        description: Run KICS scan
+      runTrivy:
+        description: Run Trivy scan
         type: boolean
         default: false
         required: false
@@ -48,7 +48,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -59,15 +59,15 @@ jobs:
 
       - name: Dry-run Semantic Release
         id: release
-        uses: cycjimmy/semantic-release-action@v4
+        uses: cycjimmy/semantic-release-action@v6
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          semantic_version: 24
+          semantic_version: 25
           dry_run: true
           extra_plugins: |
-            conventional-changelog-conventionalcommits@8.0.0
-            @semantic-release/github@10.3.5
+            conventional-changelog-conventionalcommits@9.3.0
+            @semantic-release/github@12.0.6
 
       - name: Get new release version or assign current
         run: |
@@ -90,11 +90,11 @@ jobs:
       release_version: ${{ env.release_version }}
 
   scan:
-    name: Checkmarx KICS
+    name: Trivy Scan
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: |
-      inputs.runKics == true ||
+      inputs.runTrivy == true ||
       github.event_name == 'push'
     permissions:
       contents: read
@@ -110,20 +110,22 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Run KICS scan
-        uses: checkmarx/kics-github-action@v2
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@0.35.0
         with:
-          path: ${{ env.KICS_SCAN_PATH }}
-          fail_on: high
-          output_formats: "json,sarif"
-          exclude_paths: ".github/workflows/scorecard.yml"
-          exclude_queries: "555ab8f9-2001-455e-a077-f2d0f41e2fb9" # Unpinned Actions Full Length Commit SHA
+          scan-type: fs
+          scanners: vuln,secret,misconfig
+          scan-ref: ./
+          format: sarif
+          output: results.sarif
+          severity: HIGH,CRITICAL
+          exit-code: 1
         continue-on-error: true
 
       - name: Upload to code-scanning
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: results.sarif
 
@@ -144,7 +146,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
@@ -236,21 +238,21 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Semantic Release
         id: release
-        uses: cycjimmy/semantic-release-action@v4
+        uses: cycjimmy/semantic-release-action@v6
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          semantic_version: 24
+          semantic_version: 25
           extra_plugins: |
-            conventional-changelog-conventionalcommits@8.0.0
-            @semantic-release/github@10.3.5
+            conventional-changelog-conventionalcommits@9.3.0
+            @semantic-release/github@12.0.6
 
       - name: Install Helm
         uses: azure/setup-helm@v4
