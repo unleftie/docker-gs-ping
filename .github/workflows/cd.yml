@@ -17,7 +17,6 @@ on:
 
 env:
   REGISTRY: "ghcr.io"
-  KICS_SCAN_PATH: "./"
   IMAGE_NAME: ${{ github.repository }}
   IMAGE_PLATFORMS: "linux/amd64,linux/arm64"
 
